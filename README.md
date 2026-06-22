@@ -1,5 +1,7 @@
 # VISCA-Game-Controller
 
+> **Note:** This project is based on the original VISCA Game Controller by Dan Tappan and is released under the MIT License. This version adds enhanced Bitfocus Companion integration, named camera support, configurable PTZ response curves, and other usability improvements while remaining backward compatible with the original OSC interface.
+
 An application to control PTZ Cameras using the [SONY VISCA Protocol](https://www.sony.net/Products/CameraSystem/CA/BRC_X1000_BRC_H800/Technical_Document/C456100121.pdf) and a USB Game Controller
 
 This program was originally based on the project https://github.com/International-Anglican-Church/visca-joystick and uses the VISCA camera library https://github.com/misterhay/VISCA-IP-Controller. It has been extensively rewritten to support such things as
@@ -11,7 +13,7 @@ This program was originally based on the project https://github.com/Internationa
 - some rearrangement of functions between buttons/joysticks/hats on the controller based on the principle of "it seemed to me to work better that way"
 - bug fixes and hardening
 
-At this point the code and functionality has changed too much to be merged back with the original project
+Since the original release, the project has evolved with numerous enhancements and workflow improvements focused on live production and Bitfocus Companion integration.
 
 
 ## Intended use
@@ -67,8 +69,12 @@ The Configuration dialog allows setting the following parameters:
 
 ![Configuration Dialog](screenshots/VISCA-controller-configure.png)
 
-- "Camera" and "Port" set the camera address and VISCA port for each camera. The default port number for SONY VISCA is 52381. If the program is being used in conjunction with the [NDI Camera Selector](https://github.com/DanTappan/NDI-Camera-Selector) application (which automatically forwards VISCA packets to the camera selected for the appropriate slot), then the camera address should set to 127.0.0.1 (localhost) and the port to 10000+*camera number*. See the "Relay" button below.
-- "Long Press" - the timeout value for a long press vs a short press of a button.
+- **"Name"**, **"IP Address"**, and **"Port"** configure each camera.
+  - **Name** is a user-defined label displayed by the application and may also be used with the `/setcam` OSC command (for example, `/setcam Front`).
+  - **IP Address** is the network address of the camera.
+  - **Port** is the VISCA-over-IP port for the camera. The default for most SONY VISCA implementations is `52381`.
+
+  If the program is being used in conjunction with the **NDI Camera Selector** application (which automatically forwards VISCA packets to the selected camera), configure the IP address and port as required by that application. See the **Relay** button below.- "Long Press" - the timeout value for a long press vs a short press of a button.
 The program must be restarted for a change to take effect.
 - "Dead Zone". This sets the size of the center dead zone, where the joysticks will not respond.
 This is useful for noisy analog joysticks that do not zero properly. 
@@ -81,6 +87,7 @@ See section [Bitfocus Companion Integrations](#bitfocus-companion-integrations).
 - "Invert Tilt" - reverses the sense of the tilt joystick control
 - "Swap Pan" - reverses the sense of the pan joystick control
 - "Debug Mode" - enables some debugging functions
+- **"Pan Speeds"**, **"Tilt Speeds"**, **"Zoom Speeds"**, and **"Focus Speeds"** define the response curves used to convert joystick movement into camera speed. Values are entered as comma-separated lists (for example, `1,1,3,5,7,9`). Higher values produce faster camera movement.
 - "Relay" - automatically fills in the Camera&Port fields with the correct values for operation with the [NDI Camera Selector](https://github.com/DanTappan/NDI-Camera-Selector) VISCA Relay function.
 
 ## Controller Functions
@@ -302,7 +309,23 @@ By triggering on a change to that variable, Companion can relay this value to th
 To support actions triggered by Companion, the application provides a UDP
 [Open Sound Control(OSC)](https://en.wikipedia.org/wiki/Open_Sound_Control) on port 9999. 
 Currently, the supported commands are:
-* /setcam/_number_ to select the indicated camera. This supports using Companion buttons to select cameras.
+
+* `/setcam/<camera>` – Selects the indicated camera. The camera may be specified either by **number** or by its configured **name**.
+
+  Examples:
+
+  ```
+  /setcam 1
+  /setcam 4
+  /setcam Front
+  /setcam Overhead
+  ```
+
+  This allows Bitfocus Companion buttons to use descriptive camera names while remaining backward compatible with numeric camera selection.
+
+* `/clearcam` – Clears the currently selected camera and disables gamepad PTZ control until another `/setcam` command is received.
+
+  This is useful when switching to non-camera sources such as presentation slides or media playback, preventing accidental camera movement.
 
 ### VISCA Relay
 

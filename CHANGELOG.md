@@ -4,19 +4,17 @@
 
 ### Overview
 
-This release adds significant usability improvements for Bitfocus Companion integration, camera management, and controller configuration while maintaining backward compatibility with previous versions.
+This release adds significant usability improvements for Bitfocus Companion integration, camera management, and controller configuration while maintaining backward compatibility with existing installations.
 
 ### New Features
 
 * Added configurable camera names.
 * Camera names are persisted across application restarts.
 * OSC `/setcam` command now accepts either:
-
   * Camera numbers (e.g. `1`)
   * Configured camera names (e.g. `Front`, `Left`, `Over`, `Tail`)
 * Added OSC `/clearcam` command to disable PTZ control when no camera is active.
 * Added configurable response profiles for:
-
   * Pan
   * Tilt
   * Zoom
@@ -45,9 +43,10 @@ This release adds significant usability improvements for Bitfocus Companion inte
 
 * Existing numeric `/setcam` OSC commands remain fully supported.
 * Existing Companion configurations continue to function without modification.
+* Existing OSC workflows and numeric camera selection remain fully supported, allowing incremental adoption of the new named-camera functionality.
 
 ---
 
 Original application by Dan Tappan.
 
-Enhancements for Version 1.1beta1 by Phil Rose (Dragon's Rose Studio).
+Enhancements for Version 1.1beta1 by Phil Rose.
